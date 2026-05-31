@@ -50,7 +50,7 @@ html, body{
 
 <div id="overlay">
     <button id="closeBtn">Cierra loquete</button>
-    <video id="jumpVideo" preload="auto" muted>
+    <video id="jumpVideo" preload="auto" playsinline>
 			<source src="jumpscare.mp4" type="video/mp4">
 		</video>
 </div>
@@ -58,30 +58,39 @@ html, body{
 <script>
 const overlay = document.getElementById('overlay');
 const video = document.getElementById('jumpVideo');
+const closeBtn = document.getElementById('closeBtn');
 
 let triggered = false;
 
 function launchJumpscare() {
     if (triggered) return;
-
     triggered = true;
 
     overlay.style.display = 'block';
 
+    video.pause();
     video.currentTime = 0;
-
     video.muted = false;
 
-    video.play();
+    const playPromise = video.play();
+
+    if (playPromise) {
+        playPromise.catch(() => {
+            video.muted = true;
+            video.play();
+        });
+    }
 
     window.removeEventListener('wheel', launchJumpscare);
     window.removeEventListener('touchmove', launchJumpscare);
+    window.removeEventListener('scroll', launchJumpscare);
 }
 
-window.addEventListener('wheel', launchJumpscare, { passive: true });
-window.addEventListener('touchmove', launchJumpscare, { passive: true });
+window.addEventListener('wheel', launchJumpscare, { once: true });
+window.addEventListener('touchmove', launchJumpscare, { once: true });
+window.addEventListener('scroll', launchJumpscare, { once: true });
 
-document.getElementById('closeBtn').addEventListener('click', () => {
+closeBtn.addEventListener('click', () => {
     video.pause();
     video.currentTime = 0;
     overlay.style.display = 'none';
