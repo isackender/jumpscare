@@ -50,11 +50,9 @@ html, body{
 
 <div id="overlay">
     <button id="closeBtn">Cierra loquete</button>
-    <video
-			id="jumpVideo"
-			preload="auto">
+    <video id="jumpVideo" preload="auto" muted>
 			<source src="jumpscare.mp4" type="video/mp4">
-	</video>
+		</video>
 </div>
 
 <script>
@@ -71,7 +69,10 @@ function launchJumpscare() {
     overlay.style.display = 'block';
 
     video.currentTime = 0;
-    video.play().catch(console.error);
+
+    video.muted = false;
+
+    video.play();
 
     window.removeEventListener('wheel', launchJumpscare);
     window.removeEventListener('touchmove', launchJumpscare);
